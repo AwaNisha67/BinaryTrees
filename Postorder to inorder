@@ -1,0 +1,59 @@
+#include<stdio.h>
+#include<stdlib.h>
+
+struct BST {
+    struct BST* left;
+    int data;
+    struct BST* right;
+};
+
+struct BST* buildTree(int* postorder, int* inorder, int postStart, int postEnd, int inStart, int inEnd) {
+    if (postStart <= postEnd && inStart <= inEnd) {
+        struct BST* nn = (struct BST*)malloc(sizeof(struct BST));
+        nn->data = postorder[postEnd];
+        nn->left = nn->right = NULL;
+
+        int inIndex;
+        for (inIndex = inStart; inIndex <= inEnd; inIndex++) {
+            if (inorder[inIndex] == postorder[postEnd]) {
+                break;
+            }
+        }
+
+        nn->left = buildTree(postorder, inorder, postStart, postStart + inIndex - inStart - 1, inStart, inIndex - 1);
+        nn->right = buildTree(postorder, inorder, postStart + inIndex - inStart, postEnd - 1, inIndex + 1, inEnd);
+
+        return nn;
+    }
+    return NULL;
+}
+
+void binarytreePrint(struct BST* root) {
+    if (root != NULL) {
+        binarytreePrint(root->left);
+        printf("%d ", root->data);
+        binarytreePrint(root->right);
+    }
+}
+
+int main() {
+    int i, size;
+    printf("Enter size: ");
+    scanf("%d", &size);
+    int postorder[size], inorder[size];
+    printf("Enter postorder elements: ");
+    for (i = 0; i < size; i++) {
+        printf("%d: ", i + 1);
+        scanf("%d", &postorder[i]);
+    }
+    printf("Enter inorder elements: ");
+    for (i = 0; i < size; i++) {
+        printf("%d: ", i + 1);
+        scanf("%d", &inorder[i]);
+    }
+
+    struct BST* root = buildTree(postorder, inorder, 0, size - 1, 0, size - 1);
+    // Traversing
+    binarytreePrint(root);
+    return 0;
+}
